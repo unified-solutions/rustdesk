@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Solutions - Quick RustDesk Install</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5aa0; margin-bottom: 30px; }
+        .install-box { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 20px 0;
+            border: 2px dashed #007bff;
+        }
+        .command { 
+            background: #2d3748; 
+            color: #68d391; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            margin: 15px 0;
+            position: relative;
+        }
+        .copy-btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px;
+            font-size: 16px;
+        }
+        .copy-btn:hover { background: #0056b3; }
+        .step { 
+            background: #e7f3ff; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 8px;
+            text-align: left;
+        }
+        .warning { 
+            background: #fff3cd; 
+            border: 1px solid #ffeaa7; 
+            padding: 15px; 
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Unified Solutions<br>Emergency Remote Access Setup</h1>
+        
+        <div class="install-box">
+            <h2>⚡ One-Click Installation</h2>
+            <p><strong>For Technician Use Only</strong></p>
+            
+            <div class="command" id="install-command">
+                iex (irm https://raw.githubusercontent.com/unified-solutions/rustdesk/main/install.ps1)
+            </div>
+            
+            <button class="copy-btn" onclick="copyCommand()">📋 Copy Installation Command</button>
+        </div>
+
+        <div class="step">
+            <h3>📋 Installation Steps:</h3>
+            <ol>
+                <li><strong>Open PowerShell as Administrator</strong><br>
+                    Right-click Start button → "Windows PowerShell (Admin)"</li>
+                <li><strong>Paste the command above</strong><br>
+                    Right-click in PowerShell to paste</li>
+                <li><strong>Press Enter</strong><br>
+                    Wait for installation to complete</li>
+                <li><strong>Save the Device ID & Password</strong><br>
+                    Note the displayed information for remote access</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong><br>
+            • Must run PowerShell as Administrator<br>
+            • Internet connection required<br>
+            • Takes 1-2 minutes to complete<br>
+            • Client will receive Device ID and secure password
+        </div>
+
+        <p><strong>Unified Solutions</strong><br>
+        Montreal, QC | info@unified-solutions.ca</p>
+    </div>
+
+    <script>
+        // Update GitHub username automatically when page loads
+        window.onload = function() {
+            // You'll replace YOUR-USERNAME with your actual GitHub username
+            const command = document.getElementById('install-command');
+            // For now, using a placeholder - you'll update this
+        }
+
+        function copyCommand() {
+            const command = document.getElementById('install-command').textContent;
+            navigator.clipboard.writeText(command).then(() => {
+                alert('✅ Command copied!\n\nNext:\n1. Open PowerShell as Admin\n2. Paste and press Enter');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = command;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('✅ Command copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
