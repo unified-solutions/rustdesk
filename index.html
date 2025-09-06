@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Solutions - Secure Access</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 100px auto; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .login-container, .main-container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .hidden { display: none; }
+        h1 { color: #2c5aa0; margin-bottom: 30px; }
+        .password-input { 
+            width: 100%; 
+            padding: 15px; 
+            font-size: 16px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            margin: 15px 0;
+            box-sizing: border-box;
+        }
+        .login-btn, .copy-btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .login-btn:hover, .copy-btn:hover { background: #0056b3; }
+        .command { 
+            background: #2d3748; 
+            color: #68d391; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            margin: 15px 0;
+            text-align: left;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .error { 
+            color: #dc3545; 
+            margin: 10px 0; 
+            font-weight: bold;
+        }
+        .warning { 
+            background: #fff3cd; 
+            border: 1px solid #ffeaa7; 
+            padding: 15px; 
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .step { 
+            background: #e7f3ff; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 8px;
+            text-align: left;
+        }
+        .security-note {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <h1>🔐 Unified Solutions<br>Technician Access</h1>
+        <p><strong>Authorized Personnel Only</strong></p>
+        
+        <input type="password" 
+               id="passwordInput" 
+               class="password-input" 
+               placeholder="Enter technician password" 
+               onkeypress="if(event.key==='Enter') checkPassword()">
+        
+        <br>
+        <button class="login-btn" onclick="checkPassword()">🔓 Access Deployment Tools</button>
+        
+        <div id="errorMessage" class="error"></div>
+        
+        <div class="security-note">
+            <strong>🛡️ Security Notice:</strong><br>
+            This page contains sensitive deployment information for Unified Solutions technicians only. 
+            Unauthorized access is prohibited.
+        </div>
+
+        <div class="contact-info">
+            <strong>Unified Solutions</strong><br>
+            Payment Processing & POS Solutions<br>
+            📍 Montreal, QC, Canada<br>
+            📧 info@unified-solutions.ca
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden until authenticated) -->
+    <div id="mainContent" class="main-container hidden">
+        <h1>🔧 Unified Solutions<br>RustDesk Emergency Access</h1>
+        
+        <div class="step">
+            <h3>⚡ Secure Installation Command:</h3>
+            <div class="command" id="installCommand">
+                iex (irm https://raw.githubusercontent.com/unified-solutions/rustdesk-deploy/main/install.ps1)
+            </div>
+            <button class="copy-btn" onclick="copyCommand()">📋 Copy Command</button>
+        </div>
+
+        <div class="step">
+            <h3>📋 Installation Steps:</h3>
+            <ol>
+                <li><strong>Open PowerShell as Administrator</strong><br>
+                    Right-click Start → "Windows PowerShell (Admin)"</li>
+                <li><strong>Paste the command above</strong><br>
+                    Right-click in PowerShell to paste</li>
+                <li><strong>Press Enter and wait</strong><br>
+                    Installation takes 1-2 minutes</li>
+                <li><strong>Record Device ID & Password</strong><br>
+                    Save the displayed information</li>
+                <li><strong>Test connection before leaving</strong><br>
+                    Verify remote access works</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Technician Checklist:</strong><br>
+            • Verify client permission before installation<br>
+            • Explain remote access purpose to client<br>
+            • Test connection functionality<br>
+            • Document installation in service records<br>
+            • Provide client with support contact info
+        </div>
+
+        <div class="step">
+            <h3>📞 Emergency Support Contact:</h3>
+            <p><strong>Unified Solutions</strong><br>
+            📧 Email: support@unifiedsolutions.ca<br>
+            📍 Location: Candiac, QC<br>
+            🕒 Available: Business hours + emergency calls</p>
+        </div>
+
+        <button class="copy-btn" onclick="logout()" style="background: #dc3545;">🚪 Logout & Clear Session</button>
+    </div>
+
+    <script>
+        // SECURITY CONFIGURATION - CHANGE THIS PASSWORD
+        const TECHNICIAN_PASSWORD = "Unified!";
+        
+        // Session management
+        let authenticated = false;
+        let sessionTimeout;
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (input === TECHNICIAN_PASSWORD) {
+                authenticated = true;
+                showMainContent();
+                startSessionTimeout();
+                errorDiv.textContent = '';
+            } else {
+                errorDiv.textContent = '❌ Invalid password. Access denied.';
+                document.getElementById('passwordInput').value = '';
+                
+                // Add delay to prevent brute force
+                setTimeout(() => {
+                    document.getElementById('passwordInput').disabled = false;
+                }, 1000);
+                document.getElementById('passwordInput').disabled = true;
+            }
+        }
+
+        function showMainContent() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+        }
+
+        function logout() {
+            authenticated = false;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('passwordInput').value = '';
+            clearTimeout(sessionTimeout);
+        }
+
+        function startSessionTimeout() {
+            clearTimeout(sessionTimeout);
+            sessionTimeout = setTimeout(() => {
+                alert('🔒 Session expired for security. Please re-authenticate.');
+                logout();
+            }, 30 * 60 * 1000); // 30 minutes
+        }
+
+        function copyCommand() {
+            if (!authenticated) {
+                alert('Please login first');
+                return;
+            }
+            
+            const command = document.getElementById('installCommand').textContent;
+            navigator.clipboard.writeText(command).then(() => {
+                alert('✅ Installation command copied!\n\nNext:\n1. Open PowerShell as Admin\n2. Paste and press Enter\n3. Save Device ID & Password');
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = command;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('✅ Command copied!');
+            });
+            
+            startSessionTimeout();
+        }
+
+        // Reset timeout on activity
+        document.addEventListener('click', () => {
+            if (authenticated) startSessionTimeout();
+        });
+        
+        document.addEventListener('keypress', () => {
+            if (authenticated) startSessionTimeout();
+        });
+
+        // Basic security measures
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 73)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
